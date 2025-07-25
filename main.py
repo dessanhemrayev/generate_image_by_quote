@@ -2,7 +2,7 @@ import base64
 import json
 import time
 import requests
-from typing import Optional, List
+from typing import List
 
 API_KEY = ""
 SECRET_KEY = ""
@@ -76,12 +76,19 @@ class FusionBrainAPI:
 
 
 def get_random_quote() -> str:
-    """Fetch a random quote from quotes API with fallback."""
+    """Fetch a random quote from quotes API with proper fallback handling."""
     try:
         response = requests.get(QUOTES_API_URL, timeout=10)
         response.raise_for_status()
-        return response.json().get("quote", "Sun in sky")
-    except requests.exceptions.RequestException:
+        
+        # Handle cases where API returns success but no quote content
+        data = response.json()
+        quote = data.get("quote", "").strip()
+        
+        # Return fallback if quote is empty
+        return quote if quote else "Sun in sky"
+    
+    except (requests.exceptions.RequestException, json.JSONDecodeError):
         return "Sun in sky"
 
 
