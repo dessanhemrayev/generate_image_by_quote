@@ -104,9 +104,9 @@ Processing error: Image generation failed
 
 <!-- DAILY_IMAGE_START -->
 
-<p>Daily quote content has not been generated yet.</p>
+<pre>Не нужно косить, под гламурных куриц, парни любят нежных, парни любят умниц.</pre>
 
-Last updated (UTC): not generated yet
+Last updated (UTC): 2026-10-13
 <!-- DAILY_IMAGE_END -->
 
 ## Troubleshooting
