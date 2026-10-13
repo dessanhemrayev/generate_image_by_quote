@@ -1,78 +1,26 @@
 import base64
+import fcntl
+import hashlib
+import html
 import json
-import time
-import requests
-from typing import List
+import os
+import tempfile
+from contextlib import contextmanager
+from datetime import datetime, timezone
+from pathlib import Path
 
-API_KEY = ""
-SECRET_KEY = ""
+import requests
+
+from fusionbrain_api import FusionBrainAPI
+
+API_KEY = os.environ.get("FUSIONBRAIN_API_KEY", "")
+SECRET_KEY = os.environ.get("FUSIONBRAIN_SECRET_KEY", "")
 BASE_URL = "https://api-key.fusionbrain.ai/"
 QUOTES_API_URL = "https://quotes.to.digital/api/random"
-
-
-class FusionBrainAPI:
-    """API client for FusionBrain image generation service."""
-    
-    def __init__(self, base_url: str, api_key: str, secret_key: str):
-        self.base_url = base_url
-        self.headers = {
-            'X-Key': f'Key {api_key}',
-            'X-Secret': f'Secret {secret_key}',
-        }
-
-    def get_pipeline_id(self) -> str:
-        """Retrieve the first available pipeline ID."""
-        response = requests.get(
-            f"{self.base_url}key/api/v1/pipelines",
-            headers=self.headers,
-            timeout=60
-        )
-        response.raise_for_status()
-        return response.json()[0]['id']
-
-    def generate_image(self, prompt: str, pipeline_id: str, 
-                       num_images: int = 1, width: int = 1024, height: int = 1024) -> str:
-        """Initiate image generation request and return operation UUID."""
-        params = {
-            "type": "GENERATE",
-            "numImages": num_images,
-            "width": width,
-            "height": height,
-            "generateParams": {"query": prompt}
-        }
-
-        payload = {
-            'pipeline_id': (None, pipeline_id),
-            'params': (None, json.dumps(params), 'application/json')
-        }
-        
-        response = requests.post(
-            f"{self.base_url}key/api/v1/pipeline/run",
-            headers=self.headers,
-            files=payload
-        )
-        response.raise_for_status()
-        return response.json()['uuid']
-
-    def get_generation_result(self, request_id: str, 
-                              max_attempts: int = 10, delay: int = 10) -> List[str]:
-        """Check generation status and return results when ready."""
-        for _ in range(max_attempts):
-            response = requests.get(
-                f"{self.base_url}key/api/v1/pipeline/status/{request_id}",
-                headers=self.headers
-            )
-            response.raise_for_status()
-            data = response.json()
-
-            if data['status'] == 'DONE':
-                return data['result']['files']
-            if data['status'] == 'FAIL':
-                raise RuntimeError("Image generation failed")
-
-            time.sleep(delay)
-        
-        raise TimeoutError("Image generation timed out")
+IMAGE_PATH = Path("daily_quote.jpg")
+README_PATH = Path("README.md")
+README_START = "<!-- DAILY_IMAGE_START -->"
+README_END = "<!-- DAILY_IMAGE_END -->"
 
 
 def get_random_quote() -> str:
@@ -88,39 +36,142 @@ def get_random_quote() -> str:
         # Return fallback if quote is empty
         return quote if quote else "Sun in sky"
     
-    except (requests.exceptions.RequestException, json.JSONDecodeError):
+    except (requests.exceptions.RequestException, json.JSONDecodeError, AttributeError, TypeError):
         return "Sun in sky"
 
 
-def save_image(image_data: str, filename: str) -> None:
-    """Decode base64 image data and save to file."""
-    decoded_data = base64.b64decode(image_data)
-    with open(f"{filename}.jpg", "wb") as file:
-        file.write(decoded_data)
+def _write_temp_file(target: Path, content: bytes | str) -> Path:
+    descriptor, filename = tempfile.mkstemp(dir=target.parent, prefix=f".{target.name}.")
+    temporary_path = Path(filename)
+    try:
+        if isinstance(content, bytes):
+            with os.fdopen(descriptor, "wb") as file:
+                file.write(content)
+        else:
+            with os.fdopen(descriptor, "w", encoding="utf-8", newline="") as file:
+                file.write(content)
+    except BaseException:
+        temporary_path.unlink(missing_ok=True)
+        raise
+    return temporary_path
+
+
+@contextmanager
+def _publication_lock():
+    lock_id = hashlib.sha256(str(README_PATH.resolve()).encode("utf-8")).hexdigest()
+    lock_path = Path(tempfile.gettempdir()) / f"daily-quote-{lock_id}.lock"
+    with lock_path.open("a") as lock_file:
+        fcntl.flock(lock_file.fileno(), fcntl.LOCK_EX)
+        try:
+            yield
+        finally:
+            fcntl.flock(lock_file.fileno(), fcntl.LOCK_UN)
+
+
+def _render_readme(image_date: str, quote: str, image_generated: bool) -> str:
+    with README_PATH.open("r", encoding="utf-8", newline="") as file:
+        content = file.read()
+    line_ending = "\r\n" if "\r\n" in content else "\n"
+    content = content.replace("\r\n", "\n")
+    start = content.index(README_START) + len(README_START)
+    end = content.index(README_END, start)
+    escaped_quote = html.escape(quote)
+    quote_display = f"<pre>{escaped_quote}</pre>"
+    if image_generated:
+        display = f"\n\n![Daily quote image](daily_quote.jpg)\n\n{quote_display}\n"
+    else:
+        display = f"\n\n{quote_display}\n"
+    section = f"{display}\nLast updated (UTC): {image_date}\n"
+    updated_content = content[:start] + section + content[end:]
+    return updated_content.replace("\n", line_ending)
+
+
+def _replace_published_files(readme_temp: Path, image_temp: Path | None) -> None:
+    targets = ((README_PATH, readme_temp), (IMAGE_PATH, image_temp))
+    backups = {}
+    installed = []
+    try:
+        for target, _ in targets:
+            if target.exists():
+                descriptor, backup_name = tempfile.mkstemp(
+                    dir=target.parent, prefix=f".{target.name}.backup."
+                )
+                os.close(descriptor)
+                backup = Path(backup_name)
+                try:
+                    os.replace(target, backup)
+                except BaseException:
+                    backup.unlink(missing_ok=True)
+                    raise
+                backups[target] = backup
+
+        for target, staged in targets:
+            if staged is not None:
+                os.replace(staged, target)
+                installed.append(target)
+    except BaseException:
+        for target in reversed(installed):
+            target.unlink(missing_ok=True)
+        for target, backup in backups.items():
+            os.replace(backup, target)
+        raise
+    else:
+        for backup in backups.values():
+            backup.unlink(missing_ok=True)
+    finally:
+        readme_temp.unlink(missing_ok=True)
+        if image_temp is not None:
+            image_temp.unlink(missing_ok=True)
+
+
+def update_readme(image_date: str, quote: str, image_data: bytes | None = None) -> None:
+    """Atomically update the daily image or quote and date in the README."""
+    with _publication_lock():
+        readme_temp = _write_temp_file(
+            README_PATH, _render_readme(image_date, quote, image_data is not None)
+        )
+        image_temp = None
+        try:
+            if image_data is not None:
+                image_temp = _write_temp_file(IMAGE_PATH, image_data)
+            _replace_published_files(readme_temp, image_temp)
+        finally:
+            readme_temp.unlink(missing_ok=True)
+            if image_temp is not None:
+                image_temp.unlink(missing_ok=True)
 
 
 def main() -> None:
     """Main execution flow."""
-    # Initialize services
-    image_api = FusionBrainAPI(BASE_URL, API_KEY, SECRET_KEY)
-    
+    quote = get_random_quote()
+    image_date = datetime.now(timezone.utc).strftime("%Y-%m-%d")
+
+    if not API_KEY or not SECRET_KEY:
+        print("FusionBrain credentials are missing; using the quote in the README.")
+        update_readme(image_date, quote)
+        return
+
     try:
-        # Prepare image generation
+        image_api = FusionBrainAPI(BASE_URL, API_KEY, SECRET_KEY)
         pipeline_id = image_api.get_pipeline_id()
-        quote = get_random_quote()
-        
-        # Generate and retrieve image
         operation_id = image_api.generate_image(quote, pipeline_id)
         images = image_api.get_generation_result(operation_id)
-        
-        # Save result
-        save_image(images[0], quote)
-        print("Image generated successfully!")
-    
-    except requests.exceptions.RequestException as e:
-        print(f"API request failed: {str(e)}")
-    except (RuntimeError, TimeoutError) as e:
-        print(f"Processing error: {str(e)}")
+        image_data = base64.b64decode(images[0], validate=True)
+    except (
+        requests.exceptions.RequestException,
+        RuntimeError,
+        TimeoutError,
+        IndexError,
+        KeyError,
+        TypeError,
+        ValueError,
+    ) as error:
+        print(f"FusionBrain is unavailable ({error}); using the quote in the README.")
+        update_readme(image_date, quote)
+        return
+
+    update_readme(image_date, quote, image_data)
+    print("Image generated successfully!")
 
 
 if __name__ == '__main__':
