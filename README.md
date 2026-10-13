@@ -34,24 +34,27 @@ cd fusionbrain-image-generator
 pip install requests
 ```
 
-3. Configure your API credentials:
-```python
-# In the script file:
-API_KEY = "your_api_key_here"
-SECRET_KEY = "your_secret_key_here"
+3. Set your API credentials as environment variables:
+```bash
+export FUSIONBRAIN_API_KEY="your_api_key_here"
+export FUSIONBRAIN_SECRET_KEY="your_secret_key_here"
 ```
 
 ## Usage
 
 Run the script directly:
 ```bash
-python image_generator.py
+python main.py
 ```
 
 The script will:
 1. Fetch a random quote
 2. Generate an AI image based on the quote
-3. Save the image as `[quote].jpg` in the current directory
+3. Save or replace `daily_quote.jpg` and update the image date in this README
+
+## Daily Automation
+
+The GitHub Actions workflow runs daily at 10:00 UTC and can also be started manually. Add `FUSIONBRAIN_API_KEY` and `FUSIONBRAIN_SECRET_KEY` under the repository's **Settings > Secrets and variables > Actions**. If image generation is unavailable, the README displays the quote as text instead. The workflow commits the image or quote and the updated date to the repository.
 
 Example output:
 ```
@@ -100,9 +103,12 @@ Processing error: Image generation failed
 
 ## Example Output
 
-![Example Generated Image](Life-is-what-happens-when-youre-busy-making-other-plans.jpg)
+<!-- DAILY_IMAGE_START -->
 
-*Example image generated from the quote: "Life is what happens when you're busy making other plans"*
+![Daily quote image](daily_quote.jpg)
+
+Last updated (UTC): not generated yet
+<!-- DAILY_IMAGE_END -->
 
 ## Troubleshooting
 
