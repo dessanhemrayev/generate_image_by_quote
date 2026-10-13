@@ -9,7 +9,7 @@ This Python script generates AI-powered images from random quotes using the Fusi
 - Automatic retry logic for image generation
 - Fallback mechanism for quote retrieval failures
 - Robust error handling for API interactions
-- Saves generated images with quote-based filenames
+- Saves generated images to the fixed `daily_quote.jpg` filename
 
 ## Prerequisites
 
@@ -18,8 +18,8 @@ This Python script generates AI-powered images from random quotes using the Fusi
    - Obtain your API key and secret
 
 2. **Python Requirements**:
-   - Python 3.8+
-   - Required packages: `requests`
+   - Python 3.12+
+   - Required packages are pinned with hashes in `requirements.lock`
 
 ## Installation
 
@@ -31,7 +31,7 @@ cd fusionbrain-image-generator
 
 2. Install dependencies:
 ```bash
-pip install requests
+pip install --require-hashes -r requirements.lock
 ```
 
 3. Set your API credentials as environment variables:
@@ -54,12 +54,11 @@ The script will:
 
 ## Daily Automation
 
-The GitHub Actions workflow runs daily at 10:00 UTC and can also be started manually. Add `FUSIONBRAIN_API_KEY` and `FUSIONBRAIN_SECRET_KEY` under the repository's **Settings > Secrets and variables > Actions**. If image generation is unavailable, the README displays the quote as text instead. The workflow commits the image or quote and the updated date to the repository.
+The GitHub Actions workflow runs daily at 10:23 UTC and can also be started manually. Add `FUSIONBRAIN_API_KEY` and `FUSIONBRAIN_SECRET_KEY` under the repository's **Settings > Secrets and variables > Actions**. If image generation is unavailable, the README displays the quote as text instead. The workflow commits the image or quote and the updated date to the repository.
 
 Example output:
 ```
 Image generated successfully!
-Saved as: Life-is-what-happens-when-youre-busy-making-other-plans.jpg
 ```
 
 ## Configuration Options
@@ -105,7 +104,7 @@ Processing error: Image generation failed
 
 <!-- DAILY_IMAGE_START -->
 
-![Daily quote image](daily_quote.jpg)
+<p>Daily quote content has not been generated yet.</p>
 
 Last updated (UTC): not generated yet
 <!-- DAILY_IMAGE_END -->
@@ -113,7 +112,7 @@ Last updated (UTC): not generated yet
 ## Troubleshooting
 
 1. **Authentication errors**:
-   - Verify your API_KEY and SECRET_KEY
+   - Verify `FUSIONBRAIN_API_KEY` and `FUSIONBRAIN_SECRET_KEY`
    - Ensure your FusionBrain account is active
 
 2. **Long processing times**:
