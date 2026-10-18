@@ -104,9 +104,9 @@ Processing error: Image generation failed
 
 <!-- DAILY_IMAGE_START -->
 
-<pre>Бей сильно. Уходи гордо. Не говори о себе громко. Пусть другие о тебе скажут тихо.</pre>
+<pre>Не пиши, не звони, не ищи. Для тебя я больше не существую.</pre>
 
-Last updated (UTC): 2026-10-17
+Last updated (UTC): 2026-10-18
 <!-- DAILY_IMAGE_END -->
 
 ## Troubleshooting
