@@ -104,9 +104,9 @@ Processing error: Image generation failed
 
 <!-- DAILY_IMAGE_START -->
 
-<pre>Я не привык обижаться. Мне либо не приятно, либо пофиг.</pre>
+<pre>Когда уходит любовь, то сердцу становится холодно.</pre>
 
-Last updated (UTC): 2026-10-23
+Last updated (UTC): 2026-10-24
 <!-- DAILY_IMAGE_END -->
 
 ## Troubleshooting
