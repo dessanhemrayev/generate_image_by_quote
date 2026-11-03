@@ -104,9 +104,9 @@ Processing error: Image generation failed
 
 <!-- DAILY_IMAGE_START -->
 
-<pre>Никто не хорош на столько,чтобы учить других.(Анджелина Джоли)</pre>
+<pre>Мы лишаем себя тысячи возможностей, ради одной мечты - которую может никогда и не получим</pre>
 
-Last updated (UTC): 2026-11-02
+Last updated (UTC): 2026-11-03
 <!-- DAILY_IMAGE_END -->
 
 ## Troubleshooting
