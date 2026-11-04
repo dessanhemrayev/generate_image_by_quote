@@ -104,9 +104,9 @@ Processing error: Image generation failed
 
 <!-- DAILY_IMAGE_START -->
 
-<pre>Мы лишаем себя тысячи возможностей, ради одной мечты - которую может никогда и не получим</pre>
+<pre>мало осталось тех, кто поймёт и поддержит, не осудив тебя, при этом, за спиной.</pre>
 
-Last updated (UTC): 2026-11-03
+Last updated (UTC): 2026-11-04
 <!-- DAILY_IMAGE_END -->
 
 ## Troubleshooting
