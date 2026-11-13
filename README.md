@@ -104,9 +104,9 @@ Processing error: Image generation failed
 
 <!-- DAILY_IMAGE_START -->
 
-<pre>А мне по кайфу с тобой проводить время</pre>
+<pre>Кровавая русская кухня в триллере «Русский бес» в кино с 31 января.</pre>
 
-Last updated (UTC): 2026-11-12
+Last updated (UTC): 2026-11-13
 <!-- DAILY_IMAGE_END -->
 
 ## Troubleshooting
