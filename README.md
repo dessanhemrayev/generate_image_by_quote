@@ -104,9 +104,9 @@ Processing error: Image generation failed
 
 <!-- DAILY_IMAGE_START -->
 
-<pre>Кровавая русская кухня в триллере «Русский бес» в кино с 31 января.</pre>
+<pre>мы часто говорим, что всё нормально, а ночью задыхаемся от боли..</pre>
 
-Last updated (UTC): 2026-11-13
+Last updated (UTC): 2026-11-14
 <!-- DAILY_IMAGE_END -->
 
 ## Troubleshooting
