@@ -104,9 +104,9 @@ Processing error: Image generation failed
 
 <!-- DAILY_IMAGE_START -->
 
-<pre>Ты мне никто, но я ревную.</pre>
+<pre>многие слова так и остаются несказанными.</pre>
 
-Last updated (UTC): 2026-11-20
+Last updated (UTC): 2026-11-21
 <!-- DAILY_IMAGE_END -->
 
 ## Troubleshooting
