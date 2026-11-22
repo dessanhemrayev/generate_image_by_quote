@@ -104,9 +104,9 @@ Processing error: Image generation failed
 
 <!-- DAILY_IMAGE_START -->
 
-<pre>многие слова так и остаются несказанными.</pre>
+<pre>Твоё имя такое короткое, а занимает все сердце.</pre>
 
-Last updated (UTC): 2026-11-21
+Last updated (UTC): 2026-11-22
 <!-- DAILY_IMAGE_END -->
 
 ## Troubleshooting
