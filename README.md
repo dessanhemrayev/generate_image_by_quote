@@ -104,9 +104,9 @@ Processing error: Image generation failed
 
 <!-- DAILY_IMAGE_START -->
 
-<pre>Твоё имя такое короткое, а занимает все сердце.</pre>
+<pre>легче умереть, чем видеть твою ладонь в её руке.</pre>
 
-Last updated (UTC): 2026-11-22
+Last updated (UTC): 2026-11-23
 <!-- DAILY_IMAGE_END -->
 
 ## Troubleshooting
