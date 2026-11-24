@@ -104,9 +104,9 @@ Processing error: Image generation failed
 
 <!-- DAILY_IMAGE_START -->
 
-<pre>легче умереть, чем видеть твою ладонь в её руке.</pre>
+<pre>— ты меня любишь? — я без тебя дышать не могу</pre>
 
-Last updated (UTC): 2026-11-23
+Last updated (UTC): 2026-11-24
 <!-- DAILY_IMAGE_END -->
 
 ## Troubleshooting
