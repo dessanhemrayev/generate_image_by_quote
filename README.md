@@ -104,9 +104,9 @@ Processing error: Image generation failed
 
 <!-- DAILY_IMAGE_START -->
 
-<pre>— ты меня любишь? — я без тебя дышать не могу</pre>
+<pre>Мы живём как лохи, как крысы лабораторные, Подчиняясь чьим-то устоям, законам.</pre>
 
-Last updated (UTC): 2026-11-24
+Last updated (UTC): 2026-11-25
 <!-- DAILY_IMAGE_END -->
 
 ## Troubleshooting
