@@ -104,9 +104,9 @@ Processing error: Image generation failed
 
 <!-- DAILY_IMAGE_START -->
 
-<pre>Мы живём как лохи, как крысы лабораторные, Подчиняясь чьим-то устоям, законам.</pre>
+<pre>Просто так не позвонят, просто так не напишут. Во всём есть явный повод, во всём есть скрытый смысл...</pre>
 
-Last updated (UTC): 2026-11-25
+Last updated (UTC): 2026-11-26
 <!-- DAILY_IMAGE_END -->
 
 ## Troubleshooting
